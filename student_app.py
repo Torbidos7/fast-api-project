@@ -17,10 +17,19 @@ students = {
     }
 }
 
+# Pydantic model , it will validate the data
 class Student(BaseModel):
-    name: str
+    name: str 
     age: int
     class_: str
+
+# Pydantic model for updating data, 
+class UpdateStudent(BaseModel):
+    name: Optional[str] = None
+    age: Optional[int] = None
+    class_: Optional[str] = None
+
+
     
 @app.get("/")
 def index():
@@ -46,4 +55,16 @@ def create_student(student_id: int, student: Student):
         # No duplicate students
         return {"Error": "Student exists"}
     students[student_id] = student
+    return students[student_id]
+
+@app.put("/update-student/{student_id}")
+def update_student(student_id: int, student: UpdateStudent):
+    if student_id not in students:
+        return {"Error": "Student does not exist"}
+    if student.name != None:
+        students[student_id].name = student.name
+    if student.age != None:
+        students[student_id].age = student.age
+    if student.class_ != None:
+        students[student_id].class_ = student.class_
     return students[student_id]
